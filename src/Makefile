@@ -7,10 +7,10 @@ LDIR=../lib
 
 LIBS=-lm
 
-_DEPS=randomInitialize.hpp sigmoid.hpp costFunction.hpp
+_DEPS=randomInitialize.hpp sigmoid.hpp costFunction.hpp printMat.hpp
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ=randomInitialize.o train.o sigmoid.o costFunction.o
+_OBJ=randomInitialize.o train.o sigmoid.o costFunction.o printMat.o
 OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.cpp $(DEPS)
