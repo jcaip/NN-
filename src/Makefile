@@ -1,6 +1,6 @@
 IDIR=../include
 CC=clang++
-CFLAGS= -I$(IDIR)
+CFLAGS= -I$(IDIR) -fopenmp -v
 
 ODIR=obj
 LDIR=../lib
