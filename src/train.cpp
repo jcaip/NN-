@@ -13,8 +13,9 @@ int main(){
 	umat y = conv_to<umat>::from(randu(10,1)*10);
 
 	vec initialTheta = join_vert(vectorise(generateRandomMatrix(250,50)) , vectorise(generateRandomMatrix(50,10)));
-	
-	cout << costFunction(initialTheta, 250,50,10,X,y,1) << endl;
+
+	mat grad = zeros(3,3)	
+	cout << costFunction(initialTheta, 250,50,10,X,y,1, grad) << endl;
 	
 	return 0;
 }
