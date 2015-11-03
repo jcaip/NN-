@@ -12,7 +12,7 @@ int main(){
 	mat X = randu(3,20)*10;
 	umat y = conv_to<umat>::from(randu(10,1)*10);
 
-	vec initialTheta = vec(join_vert(vectorise(generateRandomMatrix(250,50)) , vectorise(generateRandomMatrix(50,10))));
+	vec initialTheta = vectorise(generateRandomMatrix(250,50));
 
 	mat grad = zeros(3,3);
 	printMat(grad, "grad");
