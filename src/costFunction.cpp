@@ -26,7 +26,7 @@ double costFunction(vec theta_large, int input_layer_size, int hidden_layer_size
 	mat A1 = join_horiz(ones<mat>(m,1), X);	
 	mat A2 = join_horiz(ones<mat>(m,1), sigmoid(A1*theta1.t()));	
 	mat h_theta = sigmoid(A2*theta2.t());
-	
+		
 	//computes the cost, parallelized for each y_i individually on each thread
 	
 	#pragma omp parallel for
@@ -39,7 +39,8 @@ double costFunction(vec theta_large, int input_layer_size, int hidden_layer_size
 
 	//now it updates the gradient
 	
-
+	delta_3 = h_theta - y_large;
+	delta_2 = delta_3*theta2(:,1:
 
 	return J;
 }
