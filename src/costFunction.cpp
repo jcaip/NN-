@@ -6,7 +6,10 @@
 using namespace arma;
 
 double costFunction(vec theta_large, int input_layer_size, int hidden_layer_size,int num_labels, mat X,umat y, int lambda, mat& grad){
-	
+	//This cost function takes in a theta_large vector and then unrolls the parameters. 
+	//Also takes in the input layer size, hidden layer size, and the output layer size
+	//Cost function also updates the gradient matrix refrenced
+		
 	//defining some variables 
 	int m = X.n_rows;
 	double J = 0;
@@ -20,6 +23,8 @@ double costFunction(vec theta_large, int input_layer_size, int hidden_layer_size
 	}
 	theta1.resize(input_layer_size,hidden_layer_size);
 	theta2.resize(hidden_layer_size,num_labels);
+
+	std::cout<<"Finished unrolling theta values"<<std::endl;
 	
 	//this implements the feedforward part of the neural network function
 	
@@ -39,8 +44,8 @@ double costFunction(vec theta_large, int input_layer_size, int hidden_layer_size
 
 	//now it updates the gradient
 	
-	delta_3 = h_theta - y_large;
-	delta_2 = delta_3*theta2(:,1:
+//	delta_3 = h_theta - y_large;
+//	delta_2 = delta_3*theta2(:,1:
 
 	return J;
 }

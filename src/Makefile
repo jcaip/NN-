@@ -5,7 +5,7 @@ CFLAGS= -I$(IDIR) -fopenmp
 ODIR=obj
 LDIR=../lib
 
-LIBS=-lm
+LIBS=-larmadillo -lblas
 
 _DEPS=randomInitialize.hpp sigmoid.hpp costFunction.hpp printMat.hpp
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
