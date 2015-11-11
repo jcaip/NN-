@@ -5,47 +5,60 @@
 
 using namespace arma;
 
-double costFunction(vec theta_large, int input_layer_size, int hidden_layer_size,int num_labels, mat X,umat y, int lambda, mat& grad){
+double costFunction(vec theta_large, int input_layer_size, int hidden_layer_size,int num_labels, mat X,umat y, int lambda, vec& grad){
 	//This cost function takes in a theta_large vector and then unrolls the parameters. 
 	//Also takes in the input layer size, hidden layer size, and the output layer size
 	//Cost function also updates the gradient matrix refrenced
-		
+	std::cout<<std::endl;
+	std::cout<<"Computing Cost Function\n-----------------------"<<std::endl;
+
 	//defining some variables 
 	int m = X.n_rows;
 	double J = 0;
 	
-	mat theta1 = mat(input_layer_size*hidden_layer_size, 1);
-	mat theta2 = mat(num_labels*hidden_layer_size, 1);
+	mat theta1 = mat((input_layer_size+1)*hidden_layer_size, 1);
+	mat theta2 = mat(num_labels*(hidden_layer_size+1), 1);
 
 	//unrolls the parameters	
 	for(int i=0;i<theta_large.size();i++){
-		i < hidden_layer_size*input_layer_size? theta1(i,0) = theta_large(i) : theta2(i-(hidden_layer_size*input_layer_size),0) =theta_large(i);
+		i < hidden_layer_size*(input_layer_size+1)? theta1(i,0) = theta_large(i) : theta2(i-(hidden_layer_size*(input_layer_size+1)),0) = theta_large(i);
 	}
-	theta1.resize(input_layer_size,hidden_layer_size);
-	theta2.resize(hidden_layer_size,num_labels);
+	theta1.resize(hidden_layer_size,input_layer_size+1);
+	theta2.resize(num_labels,hidden_layer_size+1);
 
 	std::cout<<"Finished unrolling theta values"<<std::endl;
 	
 	//this implements the feedforward part of the neural network function
 	
 	mat A1 = join_horiz(ones<mat>(m,1), X);	
-	mat A2 = join_horiz(ones<mat>(m,1), sigmoid(A1*theta1.t()));	
+	mat A2 = join_horiz(ones<mat>(m,1), sigmoid(A1*theta1.t()));
 	mat h_theta = sigmoid(A2*theta2.t());
-		
-	//computes the cost, parallelized for each y_i individually on each thread
+
+	std::cout<<"Finished neural network feed-forward" <<std::endl;
 	
+	mat delta3 = mat(h_theta);	
+
+	//computes the cost, parallelized for each y_i individually on each thread
 	#pragma omp parallel for
 	for (int i=0; i<num_labels; i++){
 		mat y_i = conv_to<mat>::from(y==i);
 		J += accu(-y_i%log(h_theta.col(i)) - (1-y_i)%log(1-h_theta.col(i))) / m;
+		delta3.col(i) = delta3.col(i)-y_i;
 	}
 	//adds regularization term to cost
 	J += (accu(square(theta1)) + accu(square(theta2)) - 2*m) * (lambda/(2*m));
 
+	std::cout<<"Finished computing cost regularized cost function" <<std::endl;
 	//now it updates the gradient
 	
-//	delta_3 = h_theta - y_large;
-//	delta_2 = delta_3*theta2(:,1:
+	mat delta2 = delta3*theta2.cols(1,theta2.n_cols-1) % sigmoidGradient(A1*theta1.t());
+	
+	mat theta2_grad = (delta3.t()*A2)/m;
+	mat theta1_grad = (delta2.t()*A1)/m;
 
+	theta1_grad.cols(1, theta1_grad.n_cols-1) += lambda/m*theta1.cols(1, theta1.n_cols-1);
+	theta2_grad.cols(1, theta2_grad.n_cols-1) += lambda/m*theta2.cols(1, theta2.n_cols-1);
+
+	grad = join_vert(vectorise(theta1_grad), vectorise(theta2_grad));	
 	return J;
 }
