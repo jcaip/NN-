@@ -1,6 +1,8 @@
 #ifndef COSTFUNCTION_HPP
 #define COSTFUNCTION_HPP
 
-double costFunction(arma::vec t_large,  int ils, int hls, int nl, arma::mat X, arma::umat y, int lambda, arma::vec& grad);
+typedef std::tuple<arma::mat, arma::umat, int,int,int,double> nnParams;
+
+double costFunction(arma::vec& t_large, nnParams& params, arma::vec& grad);
 
 #endif
