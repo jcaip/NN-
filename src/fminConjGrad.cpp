@@ -1,4 +1,5 @@
 #include<armadillo>
+#include<math.h>
 #include<tuple>
 #include"printMat.hpp"
 #include"costFunction.hpp"
@@ -32,11 +33,11 @@ mat minimize(vec guess, vec& grad, int max_iter, std::tuple parameters){
 		double cost0 = cost1;
 		vec gradient0 = vec(gradient1);
 
-		guess += z1*s; //begins the line search
+		guess += step1*search_direction; //begins the line search
 		
 		vec gradient2 = vec(); // same pointless initialization
 		double cost2 = costFunction(paramteres,gradient2);
-
+		double step2;
 		double slope2 = gradient2.t()*search_direction;
 		
 		double cost3 = cost1;  // clone for a point 3
@@ -44,11 +45,57 @@ mat minimize(vec guess, vec& grad, int max_iter, std::tuple parameters){
 		double step3 = -step1;
 
 		int max_iter_line_search = (max_iter>0?) max_eval_line_search : -length-i; //set max iterations for the line search
-		int success = 0;
-		int limit =-1;
+		bool success = false;
+		double limit =-1;
 
 		while(true){
-			while
+			while (((cost2 > cost1+step1*rho*slope1 || slope2 > -sig*slope1)) && (max_iter_line_search >0)){
+				limit = step1;
+
+				if(cost2>cost1)
+					step2 = cost3 - ((0.5*slope3*step3*step3)/(step3*slope3+cost3-cost3));
+				else{
+					double alpha = 6*(cost2-cost3)/slope3+3*(slope3+slope2);
+					double beta = 3*(cost3-cost3) - cost3*(slope3+2*slope2);
+					step2 = (sqrt(beta*beta-alpha*slope2*step3*step3)-beta)/alpha;
+				}
+				if (isnan(step2) || isinf(step2))
+					step2 = step3/2;
+				
+				step2 = std::max(std::min(step2, eval_limit*step3), (1-eval_limit)*step3);
+				step1 += step2;
+				guess += step2*search_direction;
+
+				cost2 = costFunction(parameter, gradient2);
+
+				max_iter_line_search--;
+				i++;
+
+				slope2 = gradient2.t()*search_direction;
+				step3 -= step2;
+			}
+
+			if ((cost2 > cost1+step1*rho*slope1)) || (slope2> -sig*slope1)
+				break;
+			else if(slope2 > sig*slope1){
+				success = true;
+				break;
+			}
+			else if(max_iter_line_search ==0)
+				break;
+
+			//cubic approximation now
+			double alpha = 6*(cost2-cost3)/slope3+3*(slope3+slope2);
+			double beta = 3*(cost3-cost3) - cost3*(slope3+2*slope2);
+			
+			step2  = -slope2*step3*step3/(beta+sqrt(beta*Beta-alpha*slope2*step3*step3));
+			if(!isreal(step2) || isnan(step2 || isinf(step2)|| step2 <0){
+				if(limit < -0.5)
+					step2 = step1 * (extr_limit - 1);
+				else
+					step2 = (limit-step1)/2;
+			}
+			else if ()		
 		}
 	}
 }
