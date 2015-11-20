@@ -14,7 +14,6 @@ double costFunction(vec& theta_large, std::tuple<mat, umat, int, int, int, doubl
 	int num_labels = std::get<4>(params);
 	double lambda = std::get<5>(params);
 	
-	//TODO change this so that it takes in a std::tuple instead of so much stuff
 	//This cost function takes in a theta_large vector and then unrolls the parameters. 
 	//Also takes in the input layer size, hidden layer size, and the output layer size
 	//Cost function also updates the gradient matrix refrenced
